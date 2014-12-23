@@ -61,6 +61,7 @@ define([
       this.updateDragDir(picking, mouseX, mouseY);
       picking.pickVerticesInSphere(localRadius2);
       this.stroke(picking);
+      this.updateRenderSync(picking.main_);
 
       if (pickingSym) {
         this.updateDragDir(pickingSym, mouseX, mouseY, true);
@@ -68,6 +69,7 @@ define([
         pickingSym.pickVerticesInSphere(localRadius2);
         this.stroke(pickingSym, true);
       }
+      this.updateRenderSync(picking.main_);
       return true;
     },
     /** On stroke */

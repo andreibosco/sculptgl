@@ -63,6 +63,8 @@ define([
     this.preventRender_ = false; // prevent multiple render per frame
 
     this.drawFullScene_ = false; // render everything on the rtt
+    this.drawLocalEditRtt_ = false; // render the edited part of the mesh
+    this.useLocalEdit_ = true; // if we only draw the edited part of the mesh
   }
 
   SculptGL.prototype = {
@@ -130,13 +132,31 @@ define([
       this.getGui().updateMesh();
       this.render();
     },
-    renderSelectOverRtt: function () {
-      if (this.requestRender())
+    syncRenderLocalEdit: function () {
+      if (!this.useLocalEdit_ || !this.getMesh().getDynamicTopology)
+        return;
+      this.drawFullScene_ = false;
+      this.drawLocalEditRtt_ = true;
+      this.applyRender();
+    },
+    renderLocalEdit: function () {
+      if (this.useLocalEdit_ && this.getMesh().getDynamicTopology)
+        return;
+      if (this.requestRender()) {
         this.drawFullScene_ = false;
+        this.drawLocalEditRtt_ = true;
+      }
+    },
+    renderSelectOverRtt: function () {
+      if (this.requestRender()) {
+        this.drawFullScene_ = false;
+        this.drawLocalEditRtt_ = false;
+      }
     },
     /** Request a render */
     render: function () {
       this.drawFullScene_ = true;
+      this.drawLocalEditRtt_ = false;
       this.requestRender();
     },
     requestRender: function () {
@@ -153,9 +173,16 @@ define([
       var gl = this.gl_;
 
       gl.disable(gl.DEPTH_TEST);
-      // gl.enable(gl.CULL_FACE);
       gl.bindFramebuffer(gl.FRAMEBUFFER, this.rtt_.getFramebuffer());
 
+      // render to rtt
+      if (this.drawLocalEditRtt_) {
+        gl.enable(gl.CULL_FACE);
+        if (!this.getMesh().renderLocalEdit(this))
+          this.drawFullScene_ = true;
+      }
+
+      gl.disable(gl.CULL_FACE);
       if (this.drawFullScene_) {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 

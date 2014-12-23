@@ -27,6 +27,7 @@ define([
       var rLocal2 = picking.getLocalRadius2();
       picking.pickVerticesInSphere(rLocal2);
       this.stroke(picking, delta);
+      this.updateRenderSync(main);
 
       if (main.getSculpt().getSymmetry()) {
         var pickingSym = main.getPickingSymmetry();
@@ -35,6 +36,7 @@ define([
           this.stroke(pickingSym, delta);
         }
       }
+      this.updateRenderSync(main);
       this.updateRender(main);
     },
     /** On stroke */

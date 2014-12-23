@@ -55,6 +55,7 @@ define([
       var rLocal2 = picking.getLocalRadius2();
       picking.pickVerticesInSphere(rLocal2);
       this.stroke(picking, mx, my, lx, ly, this.twistData_);
+      this.updateRenderSync(main);
 
       if (main.getSculpt().getSymmetry()) {
         var pickingSym = main.getPickingSymmetry();
@@ -63,6 +64,7 @@ define([
           this.stroke(pickingSym, lx, ly, mx, my, this.twistDataSym_);
         }
       }
+      this.updateRenderSync(main);
       this.updateRender(main);
       main.getCanvas().style.cursor = 'default';
     },
